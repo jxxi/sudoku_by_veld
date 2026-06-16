@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../theme/veld_colors.dart';
 
-enum DiagramCellRole { normal, primary, secondary, eliminated }
+enum DiagramCellRole { normal, primary, house, eliminated }
 
 class DiagramCellData {
   const DiagramCellData({
@@ -69,7 +69,7 @@ class StrategyDiagram extends StatelessWidget {
                       children: List.generate(size, (col) {
                         final cell = note.cells[row][col];
                         return Expanded(
-                          child: Container(
+                          child: DecoratedBox(
                             decoration: BoxDecoration(
                               color: _backgroundFor(cell.role),
                               border: Border(
@@ -91,9 +91,19 @@ class StrategyDiagram extends StatelessWidget {
                                 ),
                               ),
                             ),
-                            child: _DiagramCellContent(
-                              cell: cell,
-                              focusDigit: note.focusDigit,
+                            child: DecoratedBox(
+                              decoration: cell.role == DiagramCellRole.primary
+                                  ? BoxDecoration(
+                                      border: Border.all(
+                                        color: VeldColors.sage,
+                                        width: 2,
+                                      ),
+                                    )
+                                  : const BoxDecoration(),
+                              child: _DiagramCellContent(
+                                cell: cell,
+                                focusDigit: note.focusDigit,
+                              ),
                             ),
                           ),
                         );
@@ -119,8 +129,8 @@ class StrategyDiagram extends StatelessWidget {
 
   Color _backgroundFor(DiagramCellRole role) {
     return switch (role) {
-      DiagramCellRole.primary => VeldColors.selectedGlow,
-      DiagramCellRole.secondary => VeldColors.houseHighlight,
+      DiagramCellRole.primary => const Color(0x4D6B7F5E),
+      DiagramCellRole.house => const Color(0x40B8956B),
       DiagramCellRole.eliminated => const Color(0x33C62828),
       DiagramCellRole.normal => VeldColors.surface,
     };
@@ -139,14 +149,13 @@ class _DiagramCellContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (cell.value != null) {
-      final isFocus = focusDigit != null && cell.value == focusDigit;
       return Center(
         child: Text(
           '${cell.value}',
-          style: TextStyle(
+          style: const TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.w700,
-            color: isFocus ? VeldColors.sage : VeldColors.ink,
+            color: VeldColors.ink,
           ),
         ),
       );
@@ -164,26 +173,20 @@ class _DiagramCellContent extends StatelessWidget {
           ),
           itemBuilder: (context, index) {
             final digit = index + 1;
-            final show = cell.notes.contains(digit);
-            final isFocus = focusDigit == digit;
-            final eliminated = cell.role == DiagramCellRole.eliminated &&
-                cell.showFocusDigit &&
-                focusDigit == digit;
+            if (!cell.notes.contains(digit)) {
+              return const SizedBox.shrink();
+            }
+
+            final isFocus =
+                cell.showFocusDigit && focusDigit != null && focusDigit == digit;
+            final eliminated = cell.role == DiagramCellRole.eliminated && isFocus;
 
             return Center(
-              child: Text(
-                show ? '$digit' : '',
-                style: TextStyle(
-                  fontSize: gridCount == 2 ? 9 : 7,
-                  color: eliminated
-                      ? VeldColors.mistake
-                      : isFocus
-                          ? VeldColors.sage
-                          : VeldColors.inkMuted,
-                  decoration:
-                      eliminated ? TextDecoration.lineThrough : null,
-                  fontWeight: isFocus ? FontWeight.w700 : FontWeight.w500,
-                ),
+              child: _NoteMark(
+                digit: digit,
+                fontSize: gridCount == 2 ? 9 : 7,
+                circled: isFocus,
+                eliminated: eliminated,
               ),
             );
           },
@@ -192,5 +195,49 @@ class _DiagramCellContent extends StatelessWidget {
     }
 
     return const SizedBox.shrink();
+  }
+}
+
+class _NoteMark extends StatelessWidget {
+  const _NoteMark({
+    required this.digit,
+    required this.fontSize,
+    required this.circled,
+    required this.eliminated,
+  });
+
+  final int digit;
+  final double fontSize;
+  final bool circled;
+  final bool eliminated;
+
+  @override
+  Widget build(BuildContext context) {
+    final text = Text(
+      '$digit',
+      style: TextStyle(
+        fontSize: fontSize,
+        height: 1,
+        color: eliminated ? VeldColors.mistake : VeldColors.inkMuted,
+        decoration: eliminated ? TextDecoration.lineThrough : null,
+        fontWeight: FontWeight.w600,
+      ),
+    );
+
+    if (!circled) return text;
+
+    return Container(
+      width: fontSize + 8,
+      height: fontSize + 8,
+      alignment: Alignment.center,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        border: Border.all(
+          color: eliminated ? VeldColors.mistake : VeldColors.mistake,
+          width: 1.5,
+        ),
+      ),
+      child: text,
+    );
   }
 }

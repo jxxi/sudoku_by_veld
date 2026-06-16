@@ -5,6 +5,9 @@ import '../../theme/veld_colors.dart';
 
 enum TutorialStep {
   welcome,
+  fillGrid,
+  onePerRow,
+  onePerColumnBox,
   tapCell,
   enterDigit,
   seeHighlights,
@@ -31,14 +34,30 @@ class TutorialStepData {
   final bool requirePencil;
 }
 
-const tutorialPuzzleId = 'easy-001';
-
 const tutorialSteps = [
   TutorialStepData(
     step: TutorialStep.welcome,
     title: 'Welcome to the veld',
     message:
         'A quick coached round — tap cells, place numbers, and learn the feel. Skip anytime.',
+  ),
+  TutorialStepData(
+    step: TutorialStep.fillGrid,
+    title: 'Fill the grid',
+    message:
+        'Every row, column, and 3×3 box must contain the digits 1 through 9.',
+  ),
+  TutorialStepData(
+    step: TutorialStep.onePerRow,
+    title: 'One per row',
+    message:
+        'Each horizontal row has exactly one of each digit — no repeats.',
+  ),
+  TutorialStepData(
+    step: TutorialStep.onePerColumnBox,
+    title: 'One per column & box',
+    message:
+        'Same rule for every column and every thicker-outlined 3×3 box.',
   ),
   TutorialStepData(
     step: TutorialStep.tapCell,

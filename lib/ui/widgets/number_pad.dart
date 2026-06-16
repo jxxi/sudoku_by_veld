@@ -11,6 +11,7 @@ class NumberPad extends StatelessWidget {
     required this.onTogglePencil,
     required this.onHint,
     this.showHint = true,
+    this.completedDigits = const {},
   });
 
   final bool pencilMode;
@@ -19,6 +20,7 @@ class NumberPad extends StatelessWidget {
   final VoidCallback onTogglePencil;
   final VoidCallback onHint;
   final bool showHint;
+  final Set<int> completedDigits;
 
   @override
   Widget build(BuildContext context) {
@@ -61,6 +63,9 @@ class NumberPad extends StatelessWidget {
           ),
           itemBuilder: (context, index) {
             final digit = index + 1;
+            if (completedDigits.contains(digit)) {
+              return const SizedBox.shrink();
+            }
             return FilledButton(
               onPressed: () => onDigit(digit),
               style: FilledButton.styleFrom(

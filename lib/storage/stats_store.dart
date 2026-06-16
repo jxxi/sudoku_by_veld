@@ -39,6 +39,7 @@ class StatsStore {
   static const _tutorialCompletedKey = 'tutorial_completed';
   static const _tipJarKey = 'tip_jar_purchased';
   static const _showTimerKey = 'show_timer_during_game';
+  static const _mistakeFeedbackKey = 'show_mistake_feedback';
   static const _puzzleIndexPrefix = 'puzzle_index_';
 
   Map<Difficulty, DifficultyStats> loadStats() {
@@ -89,6 +90,11 @@ class StatsStore {
 
   Future<void> setShowTimerDuringGame(bool value) =>
       _prefs.setBool(_showTimerKey, value);
+
+  bool get showMistakeFeedback => _prefs.getBool(_mistakeFeedbackKey) ?? true;
+
+  Future<void> setShowMistakeFeedback(bool value) =>
+      _prefs.setBool(_mistakeFeedbackKey, value);
 
   int puzzleIndex(Difficulty difficulty) =>
       _prefs.getInt('$_puzzleIndexPrefix${difficulty.name}') ?? 0;

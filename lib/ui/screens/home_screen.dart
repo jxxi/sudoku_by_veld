@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../storage/game_store.dart';
 import '../../storage/stats_store.dart';
 import '../../theme/veld_colors.dart';
+import '../widgets/home_puzzle_preview.dart';
 import '../widgets/stat_row.dart';
 import 'difficulty_screen.dart';
 import 'game_screen.dart';
@@ -160,6 +161,8 @@ class _HomeScreenState extends State<HomeScreen> {
                     style: Theme.of(context).textTheme.bodyLarge,
                     textAlign: TextAlign.center,
                   ),
+                  const SizedBox(height: 20),
+                  const HomePuzzlePreview(),
                 ],
               ),
             ),

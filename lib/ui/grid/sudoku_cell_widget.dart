@@ -15,6 +15,7 @@ class SudokuCellWidget extends StatelessWidget {
     this.isHintPrimary = false,
     this.isHintSecondary = false,
     this.isTutorialTarget = false,
+    this.showMistakeFeedback = true,
   });
 
   final SudokuCell cell;
@@ -24,6 +25,7 @@ class SudokuCellWidget extends StatelessWidget {
   final bool isHintPrimary;
   final bool isHintSecondary;
   final bool isTutorialTarget;
+  final bool showMistakeFeedback;
   final VoidCallback onTap;
 
   @override
@@ -69,7 +71,9 @@ class SudokuCellWidget extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 22,
                     fontWeight: cell.isGiven ? FontWeight.w700 : FontWeight.w500,
-                    color: cell.isWrong ? VeldColors.mistake : VeldColors.ink,
+                    color: cell.isWrong && showMistakeFeedback
+                        ? VeldColors.mistake
+                        : VeldColors.ink,
                   ),
                 ),
               ),

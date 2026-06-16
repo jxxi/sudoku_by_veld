@@ -13,12 +13,14 @@ class SudokuGrid extends StatelessWidget {
     required this.onCellTap,
     this.strategyHint,
     this.highlightCell,
+    this.showMistakeFeedback = true,
   });
 
   final GameState state;
   final ValueChanged<CellPosition> onCellTap;
   final StrategyHint? strategyHint;
   final CellPosition? highlightCell;
+  final bool showMistakeFeedback;
 
   @override
   Widget build(BuildContext context) {
@@ -91,6 +93,7 @@ class SudokuGrid extends StatelessWidget {
                           isHintPrimary: isHintPrimary,
                           isHintSecondary: isHintSecondary,
                           isTutorialTarget: isTutorialTarget,
+                          showMistakeFeedback: showMistakeFeedback,
                           onTap: () => onCellTap(pos),
                         ),
                       ),

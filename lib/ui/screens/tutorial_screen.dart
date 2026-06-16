@@ -2,13 +2,14 @@ import 'package:flutter/material.dart';
 
 import '../../logic/game_controller.dart';
 import '../../services/haptics.dart';
-import '../../logic/puzzle_repository.dart';
 import '../../models/cell_position.dart';
 import '../../models/game_state.dart';
 import '../../storage/stats_store.dart';
 import '../../theme/veld_colors.dart';
 import '../grid/sudoku_grid.dart';
 import '../widgets/number_pad.dart';
+import '../tutorial/how_to_play_overview.dart';
+import '../tutorial/tutorial_puzzle.dart';
 import '../tutorial/tutorial_steps.dart';
 
 class TutorialScreen extends StatefulWidget {
@@ -33,12 +34,7 @@ class _TutorialScreenState extends State<TutorialScreen> {
   }
 
   Future<void> _load() async {
-    final puzzle = await PuzzleRepository.instance.byId(tutorialPuzzleId);
-    if (puzzle == null) {
-      if (mounted) Navigator.of(context).pop();
-      return;
-    }
-    _controller = GameController(GameState.fromPuzzle(puzzle));
+    _controller = GameController(GameState.fromPuzzle(TutorialPuzzle.build()));
     setState(() => _loading = false);
   }
 
@@ -144,6 +140,32 @@ class _TutorialScreenState extends State<TutorialScreen> {
     }
   }
 
+  bool get _showGrid =>
+      _step != TutorialStep.welcome &&
+      _step != TutorialStep.fillGrid &&
+      _step != TutorialStep.onePerRow &&
+      _step != TutorialStep.onePerColumnBox;
+
+  bool get _isRuleStep =>
+      _step == TutorialStep.fillGrid ||
+      _step == TutorialStep.onePerRow ||
+      _step == TutorialStep.onePerColumnBox;
+
+  RuleGridHighlight get _ruleHighlight => switch (_step) {
+        TutorialStep.fillGrid => RuleGridHighlight.all,
+        TutorialStep.onePerRow => RuleGridHighlight.row,
+        TutorialStep.onePerColumnBox => RuleGridHighlight.columnAndBox,
+        _ => RuleGridHighlight.all,
+      };
+
+  TutorialStep? get _nextTapStep => switch (_step) {
+        TutorialStep.welcome => TutorialStep.fillGrid,
+        TutorialStep.fillGrid => TutorialStep.onePerRow,
+        TutorialStep.onePerRow => TutorialStep.onePerColumnBox,
+        TutorialStep.onePerColumnBox => TutorialStep.tapCell,
+        _ => null,
+      };
+
   bool get _showNumberPad =>
       _step == TutorialStep.enterDigit ||
       _step == TutorialStep.pencilMode ||
@@ -169,12 +191,17 @@ class _TutorialScreenState extends State<TutorialScreen> {
           padding: const EdgeInsets.all(16),
           child: Column(
             children: [
-              SudokuGrid(
-                state: _controller.state,
-                onCellTap: _onCellTap,
-                highlightCell: _data.targetCell,
-              ),
-              const SizedBox(height: 16),
+              if (_isRuleStep)
+                HowToPlayRuleVisual(highlight: _ruleHighlight)
+              else if (_showGrid)
+                SudokuGrid(
+                  state: _controller.state,
+                  onCellTap: _onCellTap,
+                  highlightCell: _data.targetCell,
+                )
+              else
+                const Spacer(),
+              if (_showGrid) const SizedBox(height: 16),
               if (_showNumberPad)
                 NumberPad(
                   pencilMode: _controller.state.pencilMode,
@@ -190,13 +217,12 @@ class _TutorialScreenState extends State<TutorialScreen> {
               TutorialCoach(
                 data: _data,
                 onSkip: _skip,
-                onNext: _step == TutorialStep.welcome
-                    ? () => _advance(TutorialStep.tapCell)
+                onNext: _nextTapStep != null
+                    ? () => _advance(_nextTapStep!)
                     : _step == TutorialStep.done
                         ? _finish
                         : () {},
-                showNext:
-                    _step == TutorialStep.welcome || _step == TutorialStep.done,
+                showNext: _nextTapStep != null || _step == TutorialStep.done,
               ),
             ],
           ),

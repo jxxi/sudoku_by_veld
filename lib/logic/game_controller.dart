@@ -74,7 +74,10 @@ class GameController {
       clearNotes: true,
       isWrong: false,
     );
-    state = state.copyWith(cells: cells).withValidatedCells();
+    state = state.copyWith(
+      cells: cells,
+      selected: pos,
+    ).withValidatedCells();
   }
 
   void tick(int seconds) {

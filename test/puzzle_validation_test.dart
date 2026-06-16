@@ -1,13 +1,10 @@
-import 'package:flutter_test/flutter_test.dart';
-import 'package:sudoku_by_veld/logic/puzzle_validation.dart';
-import 'package:sudoku_by_veld/models/puzzle.dart';
-
 import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:sudoku_by_veld/logic/puzzle_validation.dart';
 import 'package:sudoku_by_veld/models/puzzle.dart';
+import 'package:sudoku_by_veld/ui/tutorial/tutorial_puzzle.dart';
 
 void main() {
   late String validGivens;
@@ -16,9 +13,24 @@ void main() {
   setUpAll(() {
     final file = File('assets/puzzles/puzzles.json');
     final json = jsonDecode(file.readAsStringSync()) as Map<String, dynamic>;
-    final first = (json['puzzles'] as List<dynamic>).first as Map<String, dynamic>;
+    final first =
+        (json['puzzles'] as List<dynamic>).first as Map<String, dynamic>;
     validGivens = PuzzleValidation.digitsOnly(first['givens'] as String);
     validSolution = PuzzleValidation.digitsOnly(first['solution'] as String);
+  });
+
+  group('TutorialPuzzle', () {
+    test('walkthrough puzzle is valid', () {
+      final puzzle = TutorialPuzzle.build();
+      expect(
+        PuzzleValidation.validate(
+          id: puzzle.id,
+          givens: puzzle.givens,
+          solution: puzzle.solution,
+        ),
+        isNull,
+      );
+    });
   });
 
   group('PuzzleValidation', () {
@@ -54,7 +66,8 @@ void main() {
 
     test('rejects invalid completed solution', () {
       final badSolution = List.filled(81, '1').join();
-      const emptyGivens = '000000000000000000000000000000000000000000000000000000000000000000000000000000000';
+      const emptyGivens =
+          '000000000000000000000000000000000000000000000000000000000000000000000000000000000';
       final error = PuzzleValidation.validate(
         id: 'bad',
         givens: emptyGivens,

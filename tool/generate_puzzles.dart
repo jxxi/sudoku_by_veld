@@ -25,7 +25,7 @@ void main(List<String> args) {
     var made = 0;
     var attempts = 0;
 
-    while (made < count && attempts < count * 50) {
+    while (made < count && attempts < count * 200) {
       attempts++;
       final solved = _generateSolved(random);
       final givens = _carvePuzzle(solved, minClues, maxClues, random);
@@ -98,8 +98,12 @@ String? _carvePuzzle(
     return List.generate(9, (col) => int.parse(solved[row * 9 + col]));
   });
 
+  final target = minClues + random.nextInt(maxClues - minClues + 1);
   final positions = List.generate(81, (i) => i)..shuffle(random);
+
   for (final index in positions) {
+    if (_clueCount(board) <= target) break;
+
     final row = index ~/ 9;
     final col = index % 9;
     if (board[row][col] == 0) continue;

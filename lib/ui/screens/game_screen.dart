@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 
+import '../../logic/completed_digits.dart';
 import '../../logic/candidate_grid.dart';
 import '../../logic/game_controller.dart';
 import '../../logic/hint_engine.dart';
@@ -263,6 +264,8 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
 
     final state = _controller.state;
     final showTimer = widget.statsStore.showTimerDuringGame;
+    final showMistakeFeedback = widget.statsStore.showMistakeFeedback;
+    final completedDigits = CompletedDigits.onBoard(state);
 
     return PopScope(
       canPop: false,
@@ -300,6 +303,7 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
                     SudokuGrid(
                       state: state,
                       strategyHint: _activeHint,
+                      showMistakeFeedback: showMistakeFeedback,
                       onCellTap: (pos) {
                         setState(() {
                           _activeHint = null;
@@ -310,13 +314,14 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
                     const SizedBox(height: 16),
                     NumberPad(
                       pencilMode: state.pencilMode,
+                      completedDigits: completedDigits,
                       onDigit: (digit) {
                         final pencil = _controller.state.pencilMode;
                         setState(() {
                           _activeHint = null;
                           _controller.inputDigit(digit);
                         });
-                        if (!pencil) {
+                        if (!pencil && showMistakeFeedback) {
                           final pos = _controller.state.selected;
                           if (pos != null &&
                               _controller.state.cells[pos.row][pos.col]

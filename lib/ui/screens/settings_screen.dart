@@ -118,6 +118,17 @@ class _SettingsScreenState extends State<SettingsScreen> {
               if (mounted) setState(() {});
             },
           ),
+          SwitchListTile(
+            title: const Text('Red mistake feedback'),
+            subtitle: const Text(
+              'Wrong digits turn red and buzz. Turn off for a quieter grid.',
+            ),
+            value: widget.statsStore.showMistakeFeedback,
+            onChanged: (value) async {
+              await widget.statsStore.setShowMistakeFeedback(value);
+              if (mounted) setState(() {});
+            },
+          ),
           ListTile(
             title: const Text('Replay tutorial'),
             trailing: const Icon(Icons.replay_outlined),
