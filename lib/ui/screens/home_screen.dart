@@ -29,10 +29,21 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  SavedGameSummary? _savedSummary;
+
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) => _maybePromptTutorial());
+    _refreshSavedSummary();
+  }
+
+  void _refreshSavedSummary() {
+    setState(() {
+      _savedSummary = widget.gameStore.hasSavedGame
+          ? widget.gameStore.peekSummary()
+          : null;
+    });
   }
 
   Future<void> _maybePromptTutorial() async {
@@ -113,12 +124,38 @@ class _HomeScreenState extends State<HomeScreen> {
     }
     widget.onStatsChanged();
     setState(() {});
+    _refreshSavedSummary();
+  }
+
+  Future<void> _discardSavedGame() async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Discard saved game?'),
+        content: const Text(
+          'Your in-progress puzzle will be removed. This cannot be undone.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Discard'),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true || !mounted) return;
+
+    await widget.gameStore.clear();
+    _refreshSavedSummary();
   }
 
   @override
   Widget build(BuildContext context) {
     final stats = widget.statsStore.loadStats();
-    final hasSave = widget.gameStore.hasSavedGame;
 
     return Scaffold(
       appBar: AppBar(
@@ -137,6 +174,7 @@ class _HomeScreenState extends State<HomeScreen> {
               );
               widget.onStatsChanged();
               setState(() {});
+              _refreshSavedSummary();
             },
           ),
         ],
@@ -167,10 +205,43 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
             const SizedBox(height: 24),
-            if (hasSave) ...[
-              FilledButton(
-                onPressed: () => _openGame(resumed: true),
-                child: const Text('Continue game'),
+            if (_savedSummary != null) ...[
+              SizedBox(
+                width: double.infinity,
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    FilledButton(
+                      onPressed: () => _openGame(resumed: true),
+                      style: FilledButton.styleFrom(
+                        minimumSize: const Size(double.infinity, 52),
+                      ),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Text('Continue game'),
+                          const SizedBox(height: 2),
+                          Text(
+                            '${_savedSummary!.difficulty.label} · ${formatElapsed(_savedSummary!.elapsedSeconds)}',
+                            style: Theme.of(context).textTheme.labelMedium,
+                          ),
+                        ],
+                      ),
+                    ),
+                    Positioned(
+                      right: 4,
+                      top: 0,
+                      bottom: 0,
+                      child: IconButton(
+                        tooltip: 'Discard saved game',
+                        onPressed: _discardSavedGame,
+                        visualDensity: VisualDensity.compact,
+                        color: Theme.of(context).colorScheme.onPrimary,
+                        icon: const Icon(Icons.delete_outline),
+                      ),
+                    ),
+                  ],
+                ),
               ),
               const SizedBox(height: 12),
             ],

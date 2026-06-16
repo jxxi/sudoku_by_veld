@@ -6,6 +6,8 @@ abstract final class VeldColors {
   static const surfaceMuted = Color(0xFFD9D2C3);
   static const sage = Color(0xFF6B7F5E);
   static const ochre = Color(0xFFB8956B);
+  /// User-facing name for [ochre] highlights.
+  static const brown = ochre;
   static const ink = Color(0xFF3D3A32);
   static const inkMuted = Color(0xFF6B655C);
   static const mistake = Color(0xFFC62828);

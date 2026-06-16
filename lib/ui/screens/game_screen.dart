@@ -18,6 +18,7 @@ import '../grid/sudoku_grid.dart';
 import '../widgets/completion_celebration.dart';
 import '../widgets/number_pad.dart';
 import '../widgets/stat_row.dart';
+import '../widgets/strategy_hint_sheet.dart';
 
 class GameScreen extends StatefulWidget {
   const GameScreen({
@@ -139,7 +140,7 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Leave puzzle?'),
-        content: const Text('Your progress is saved — you can continue from home.'),
+        content: const Text('Your progress is saved — you can continue later.'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
@@ -198,38 +199,35 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text(
-              'No simple pattern found right now — try Reveal cell or keep scanning.',
+              'No logical pattern found right now — try Reveal cell or keep scanning.',
             ),
           ),
         );
         return;
       }
+
       setState(() => _activeHint = hint);
-      if (!mounted) return;
-      await showDialog<void>(
+
+      await showModalBottomSheet<void>(
         context: context,
-        builder: (context) => AlertDialog(
-          title: Text(hint.technique),
-          content: Text(hint.explanation),
-          actions: [
-            if (hint.placement != null)
-              TextButton(
-                onPressed: () {
-                  final placement = hint.placement!;
-                  _controller.applyReveal(placement.cell, placement.value);
-                  setState(() => _activeHint = null);
-                  Navigator.pop(context);
-                  _afterMove();
-                },
-                child: const Text('Apply'),
-              ),
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text('Got it'),
-            ),
-          ],
-        ),
+        isScrollControlled: true,
+        showDragHandle: true,
+        builder: (context) {
+          return StrategyHintSheet(
+            hint: hint,
+            onApply: () {
+              final placement = hint.placement;
+              if (placement == null) return;
+              _controller.applyReveal(placement.cell, placement.value);
+              setState(() => _activeHint = null);
+              Navigator.pop(context);
+              _afterMove();
+            },
+          );
+        },
       );
+
+      if (mounted) setState(() => _activeHint = null);
       return;
     }
 

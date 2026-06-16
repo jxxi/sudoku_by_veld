@@ -10,12 +10,16 @@ class DiagramCellData {
     this.notes = const {},
     this.role = DiagramCellRole.normal,
     this.showFocusDigit = false,
+    this.circledNotes = const {},
+    this.struckNotes = const {},
   });
 
   final int? value;
   final Set<int> notes;
   final DiagramCellRole role;
   final bool showFocusDigit;
+  final Set<int> circledNotes;
+  final Set<int> struckNotes;
 }
 
 class FieldNote {
@@ -103,6 +107,7 @@ class StrategyDiagram extends StatelessWidget {
                               child: _DiagramCellContent(
                                 cell: cell,
                                 focusDigit: note.focusDigit,
+                                gridSize: size,
                               ),
                             ),
                           ),
@@ -141,10 +146,12 @@ class _DiagramCellContent extends StatelessWidget {
   const _DiagramCellContent({
     required this.cell,
     required this.focusDigit,
+    required this.gridSize,
   });
 
   final DiagramCellData cell;
   final int? focusDigit;
+  final int gridSize;
 
   @override
   Widget build(BuildContext context) {
@@ -152,8 +159,8 @@ class _DiagramCellContent extends StatelessWidget {
       return Center(
         child: Text(
           '${cell.value}',
-          style: const TextStyle(
-            fontSize: 18,
+          style: TextStyle(
+            fontSize: gridSize <= 4 ? 18 : 11,
             fontWeight: FontWeight.w700,
             color: VeldColors.ink,
           ),
@@ -162,9 +169,10 @@ class _DiagramCellContent extends StatelessWidget {
     }
 
     if (cell.notes.isNotEmpty) {
-      final gridCount = cell.notes.length <= 4 ? 2 : 3;
+      final gridCount = gridSize == 9 ? 3 : (cell.notes.length <= 4 ? 2 : 3);
+      final noteFontSize = gridSize <= 4 ? (gridCount == 2 ? 9.0 : 7.0) : 5.5;
       return Padding(
-        padding: const EdgeInsets.all(2),
+        padding: EdgeInsets.all(gridSize == 9 ? 1 : 2),
         child: GridView.builder(
           physics: const NeverScrollableScrollPhysics(),
           itemCount: gridCount * gridCount,
@@ -177,15 +185,16 @@ class _DiagramCellContent extends StatelessWidget {
               return const SizedBox.shrink();
             }
 
-            final isFocus =
-                cell.showFocusDigit && focusDigit != null && focusDigit == digit;
-            final eliminated = cell.role == DiagramCellRole.eliminated && isFocus;
+            final isCircled = cell.circledNotes.contains(digit) ||
+                (cell.showFocusDigit && focusDigit == digit);
+            final eliminated = cell.struckNotes.contains(digit) ||
+                (cell.role == DiagramCellRole.eliminated && isCircled);
 
             return Center(
               child: _NoteMark(
                 digit: digit,
-                fontSize: gridCount == 2 ? 9 : 7,
-                circled: isFocus,
+                fontSize: noteFontSize,
+                circled: isCircled,
                 eliminated: eliminated,
               ),
             );

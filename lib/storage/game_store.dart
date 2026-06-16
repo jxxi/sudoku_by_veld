@@ -4,8 +4,21 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../logic/puzzle_repository.dart';
 import '../models/cell_position.dart';
+import '../models/difficulty.dart';
 import '../models/game_state.dart';
 import '../models/sudoku_cell.dart';
+
+class SavedGameSummary {
+  const SavedGameSummary({
+    required this.puzzleId,
+    required this.difficulty,
+    required this.elapsedSeconds,
+  });
+
+  final String puzzleId;
+  final Difficulty difficulty;
+  final int elapsedSeconds;
+}
 
 class GameStore {
   GameStore(this._prefs);
@@ -15,6 +28,24 @@ class GameStore {
 
   bool get hasSavedGame => _prefs.containsKey(_savedGameKey);
 
+  SavedGameSummary? peekSummary() {
+    final raw = _prefs.getString(_savedGameKey);
+    if (raw == null) return null;
+
+    try {
+      final json = jsonDecode(raw) as Map<String, dynamic>;
+      return SavedGameSummary(
+        puzzleId: json['puzzleId'] as String,
+        difficulty: Difficulty.fromKey(
+          json['difficulty'] as String? ?? 'easy',
+        ),
+        elapsedSeconds: json['elapsedSeconds'] as int? ?? 0,
+      );
+    } catch (_) {
+      return null;
+    }
+  }
+
   Future<void> save(GameState state) async {
     if (state.isComplete) {
       await clear();
@@ -23,6 +54,7 @@ class GameStore {
 
     final payload = {
       'puzzleId': state.puzzle.id,
+      'difficulty': state.puzzle.difficulty.name,
       'elapsedSeconds': state.elapsedSeconds,
       'pencilMode': state.pencilMode,
       'startedAt': state.startedAt.toIso8601String(),
