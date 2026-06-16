@@ -12,11 +12,13 @@ class SudokuGrid extends StatelessWidget {
     required this.state,
     required this.onCellTap,
     this.strategyHint,
+    this.highlightCell,
   });
 
   final GameState state;
   final ValueChanged<CellPosition> onCellTap;
   final StrategyHint? strategyHint;
+  final CellPosition? highlightCell;
 
   @override
   Widget build(BuildContext context) {
@@ -57,6 +59,8 @@ class SudokuGrid extends StatelessWidget {
                             .contains(pos) ??
                         false;
 
+                    final isTutorialTarget = highlightCell == pos && !isSelected;
+
                     return Expanded(
                       child: Container(
                         decoration: BoxDecoration(
@@ -86,6 +90,7 @@ class SudokuGrid extends StatelessWidget {
                           isSameNumberHighlighted: isSameNumber,
                           isHintPrimary: isHintPrimary,
                           isHintSecondary: isHintSecondary,
+                          isTutorialTarget: isTutorialTarget,
                           onTap: () => onCellTap(pos),
                         ),
                       ),

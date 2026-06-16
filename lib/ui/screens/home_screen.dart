@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../models/difficulty.dart';
+import '../../storage/game_store.dart';
 import '../../storage/stats_store.dart';
 import '../../theme/veld_colors.dart';
 import '../widgets/stat_row.dart';
@@ -8,20 +8,116 @@ import 'difficulty_screen.dart';
 import 'game_screen.dart';
 import 'learn_screen.dart';
 import 'settings_screen.dart';
+import 'tutorial_screen.dart';
+import '../../models/difficulty.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({
     super.key,
     required this.statsStore,
+    required this.gameStore,
     required this.onStatsChanged,
   });
 
   final StatsStore statsStore;
+  final GameStore gameStore;
   final VoidCallback onStatsChanged;
 
   @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _maybePromptTutorial());
+  }
+
+  Future<void> _maybePromptTutorial() async {
+    if (widget.statsStore.tutorialCompleted || !mounted) return;
+
+    await showDialog<void>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const SizedBox(
+          width: double.infinity,
+          child: Text(
+            'First time here?',
+            textAlign: TextAlign.center,
+          ),
+        ),
+        content: const SizedBox(
+          width: double.infinity,
+          child: Text(
+            'Take a 60-second walkthrough',
+            textAlign: TextAlign.center,
+          ),
+        ),
+        actionsAlignment: MainAxisAlignment.center,
+        actions: [
+          TextButton(
+            onPressed: () async {
+              await widget.statsStore.setTutorialCompleted(true);
+              if (context.mounted) Navigator.pop(context);
+            },
+            child: const Text('Skip'),
+          ),
+          FilledButton(
+            onPressed: () {
+              Navigator.pop(context);
+              _openTutorial();
+            },
+            child: const Text('Walkthrough'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _openTutorial() async {
+    await Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => TutorialScreen(statsStore: widget.statsStore),
+      ),
+    );
+    widget.onStatsChanged();
+  }
+
+  Future<void> _openGame({Difficulty? difficulty, bool resumed = false}) async {
+    if (resumed) {
+      final state = await widget.gameStore.load();
+      if (state == null || !mounted) return;
+      await Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (_) => GameScreen(
+            statsStore: widget.statsStore,
+            gameStore: widget.gameStore,
+            resumedState: state,
+            onCompleted: widget.onStatsChanged,
+          ),
+        ),
+      );
+    } else {
+      await Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (_) => GameScreen(
+            difficulty: difficulty,
+            statsStore: widget.statsStore,
+            gameStore: widget.gameStore,
+            onCompleted: widget.onStatsChanged,
+          ),
+        ),
+      );
+    }
+    widget.onStatsChanged();
+    setState(() {});
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final stats = statsStore.loadStats();
+    final stats = widget.statsStore.loadStats();
+    final hasSave = widget.gameStore.hasSavedGame;
 
     return Scaffold(
       appBar: AppBar(
@@ -32,10 +128,14 @@ class HomeScreen extends StatelessWidget {
             onPressed: () async {
               await Navigator.of(context).push(
                 MaterialPageRoute(
-                  builder: (_) => SettingsScreen(statsStore: statsStore),
+                  builder: (_) => SettingsScreen(
+                    statsStore: widget.statsStore,
+                    onOpenTutorial: _openTutorial,
+                  ),
                 ),
               );
-              onStatsChanged();
+              widget.onStatsChanged();
+              setState(() {});
             },
           ),
         ],
@@ -64,22 +164,20 @@ class HomeScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 24),
+            if (hasSave) ...[
+              FilledButton(
+                onPressed: () => _openGame(resumed: true),
+                child: const Text('Continue game'),
+              ),
+              const SizedBox(height: 12),
+            ],
             FilledButton(
               onPressed: () async {
                 final difficulty = await Navigator.of(context).push<Difficulty>(
                   MaterialPageRoute(builder: (_) => const DifficultyScreen()),
                 );
                 if (difficulty == null || !context.mounted) return;
-
-                await Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (_) => GameScreen(
-                      difficulty: difficulty,
-                      statsStore: statsStore,
-                      onCompleted: onStatsChanged,
-                    ),
-                  ),
-                );
+                await _openGame(difficulty: difficulty);
               },
               child: const Text('New game'),
             ),
@@ -88,7 +186,7 @@ class HomeScreen extends StatelessWidget {
               onPressed: () {
                 Navigator.of(context).push(
                   MaterialPageRoute(
-                    builder: (_) => LearnScreen(statsStore: statsStore),
+                    builder: (_) => LearnScreen(statsStore: widget.statsStore),
                   ),
                 );
               },
@@ -107,7 +205,7 @@ class HomeScreen extends StatelessWidget {
                 ],
               ),
             ),
-            if (!statsStore.tipJarPurchased) ...[
+            if (!widget.statsStore.tipJarPurchased) ...[
               const SizedBox(height: 16),
               Card(
                 color: VeldColors.surface,
@@ -119,12 +217,14 @@ class HomeScreen extends StatelessWidget {
                     await Navigator.of(context).push(
                       MaterialPageRoute(
                         builder: (_) => SettingsScreen(
-                          statsStore: statsStore,
+                          statsStore: widget.statsStore,
                           openTipJar: true,
+                          onOpenTutorial: _openTutorial,
                         ),
                       ),
                     );
-                    onStatsChanged();
+                    widget.onStatsChanged();
+                    setState(() {});
                   },
                 ),
               ),

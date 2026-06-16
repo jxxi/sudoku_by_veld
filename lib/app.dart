@@ -1,14 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'storage/game_store.dart';
 import 'storage/stats_store.dart';
 import 'theme/veld_theme.dart';
 import 'ui/screens/home_screen.dart';
 
 class SudokuByVeldApp extends StatefulWidget {
-  const SudokuByVeldApp({super.key, required this.statsStore});
+  const SudokuByVeldApp({
+    super.key,
+    required this.statsStore,
+    required this.gameStore,
+  });
 
   final StatsStore statsStore;
+  final GameStore gameStore;
 
   @override
   State<SudokuByVeldApp> createState() => _SudokuByVeldAppState();
@@ -25,6 +31,7 @@ class _SudokuByVeldAppState extends State<SudokuByVeldApp> {
       theme: VeldTheme.light(),
       home: HomeScreen(
         statsStore: widget.statsStore,
+        gameStore: widget.gameStore,
         onStatsChanged: _refresh,
       ),
     );
@@ -35,5 +42,6 @@ Future<void> bootstrap() async {
   WidgetsFlutterBinding.ensureInitialized();
   final prefs = await SharedPreferences.getInstance();
   final statsStore = StatsStore(prefs);
-  runApp(SudokuByVeldApp(statsStore: statsStore));
+  final gameStore = GameStore(prefs);
+  runApp(SudokuByVeldApp(statsStore: statsStore, gameStore: gameStore));
 }

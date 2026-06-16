@@ -9,10 +9,12 @@ class SettingsScreen extends StatefulWidget {
     super.key,
     required this.statsStore,
     this.openTipJar = false,
+    this.onOpenTutorial,
   });
 
   final StatsStore statsStore;
   final bool openTipJar;
+  final VoidCallback? onOpenTutorial;
 
   @override
   State<SettingsScreen> createState() => _SettingsScreenState();
@@ -110,11 +112,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
           SwitchListTile(
             title: const Text('Show timer during game'),
             subtitle: const Text('Best times are still recorded.'),
-            value: true,
-            onChanged: (_) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Timer visibility toggle — coming soon.')),
-              );
+            value: widget.statsStore.showTimerDuringGame,
+            onChanged: (value) async {
+              await widget.statsStore.setShowTimerDuringGame(value);
+              if (mounted) setState(() {});
             },
           ),
           ListTile(
@@ -123,9 +124,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             onTap: () async {
               await widget.statsStore.setTutorialCompleted(false);
               if (!context.mounted) return;
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Tutorial reset — open Learn to replay.')),
-              );
+              widget.onOpenTutorial?.call();
             },
           ),
           ListTile(

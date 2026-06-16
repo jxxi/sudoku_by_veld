@@ -1,35 +1,14 @@
 import 'package:flutter/material.dart';
 
 import '../../storage/stats_store.dart';
-import '../../theme/veld_colors.dart';
+import '../learn/field_notes_data.dart';
+import '../learn/strategy_diagram.dart';
+import 'tutorial_screen.dart';
 
 class LearnScreen extends StatelessWidget {
   const LearnScreen({super.key, required this.statsStore});
 
   final StatsStore statsStore;
-
-  static const _strategies = [
-    (
-      title: 'Naked Single',
-      body:
-          'When a cell has only one possible candidate left, place that digit. Scan empty cells and their row, column, and box.',
-    ),
-    (
-      title: 'Hidden Single',
-      body:
-          'A digit can only fit in one cell within a row, column, or box — even if that cell still shows multiple pencil marks.',
-    ),
-    (
-      title: 'Pointing Pairs',
-      body:
-          'When a digit is confined to one row or column inside a box, you can eliminate that digit from the same line outside the box.',
-    ),
-    (
-      title: 'Box-Line Reduction',
-      body:
-          'The mirror of pointing pairs: when a digit in a row or column only appears inside one box, eliminate it from the rest of that box.',
-    ),
-  ];
 
   @override
   Widget build(BuildContext context) {
@@ -48,7 +27,7 @@ class LearnScreen extends StatelessWidget {
         body: TabBarView(
           children: [
             _WalkthroughTab(statsStore: statsStore),
-            _FieldNotesTab(),
+            const _FieldNotesTab(),
           ],
         ),
       ),
@@ -78,9 +57,9 @@ class _WalkthroughTab extends StatelessWidget {
         const SizedBox(height: 20),
         FilledButton(
           onPressed: () {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Interactive tutorial overlay — coming next.'),
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (_) => TutorialScreen(statsStore: statsStore),
               ),
             );
           },
@@ -110,13 +89,15 @@ class _WalkthroughTab extends StatelessWidget {
 }
 
 class _FieldNotesTab extends StatelessWidget {
+  const _FieldNotesTab();
+
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
       padding: const EdgeInsets.all(20),
-      itemCount: LearnScreen._strategies.length,
+      itemCount: fieldNotes.length,
       itemBuilder: (context, index) {
-        final item = LearnScreen._strategies[index];
+        final note = fieldNotes[index];
         return Card(
           margin: const EdgeInsets.only(bottom: 12),
           child: Padding(
@@ -124,16 +105,11 @@ class _FieldNotesTab extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(item.title, style: Theme.of(context).textTheme.titleMedium),
+                Text(note.title, style: Theme.of(context).textTheme.titleMedium),
                 const SizedBox(height: 8),
-                Text(item.body, style: Theme.of(context).textTheme.bodyLarge),
-                const SizedBox(height: 12),
-                Text(
-                  'Diagram puzzles coming soon.',
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: VeldColors.inkMuted,
-                      ),
-                ),
+                Text(note.body, style: Theme.of(context).textTheme.bodyLarge),
+                const SizedBox(height: 16),
+                StrategyDiagram(note: note),
               ],
             ),
           ),

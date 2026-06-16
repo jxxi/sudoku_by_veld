@@ -10,6 +10,7 @@ class NumberPad extends StatelessWidget {
     required this.onErase,
     required this.onTogglePencil,
     required this.onHint,
+    this.showHint = true,
   });
 
   final bool pencilMode;
@@ -17,6 +18,7 @@ class NumberPad extends StatelessWidget {
   final VoidCallback onErase;
   final VoidCallback onTogglePencil;
   final VoidCallback onHint;
+  final bool showHint;
 
   @override
   Widget build(BuildContext context) {
@@ -35,13 +37,16 @@ class NumberPad extends StatelessWidget {
               ),
             ),
             const SizedBox(width: 12),
-            Expanded(
-              child: OutlinedButton.icon(
-                onPressed: onHint,
-                icon: const Icon(Icons.lightbulb_outline),
-                label: const Text('Hint'),
-              ),
-            ),
+            if (showHint)
+              Expanded(
+                child: OutlinedButton.icon(
+                  onPressed: onHint,
+                  icon: const Icon(Icons.lightbulb_outline),
+                  label: const Text('Hint'),
+                ),
+              )
+            else
+              const Spacer(),
           ],
         ),
         const SizedBox(height: 12),

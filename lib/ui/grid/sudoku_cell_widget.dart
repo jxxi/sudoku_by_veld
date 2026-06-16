@@ -14,6 +14,7 @@ class SudokuCellWidget extends StatelessWidget {
     required this.onTap,
     this.isHintPrimary = false,
     this.isHintSecondary = false,
+    this.isTutorialTarget = false,
   });
 
   final SudokuCell cell;
@@ -22,6 +23,7 @@ class SudokuCellWidget extends StatelessWidget {
   final bool isSameNumberHighlighted;
   final bool isHintPrimary;
   final bool isHintSecondary;
+  final bool isTutorialTarget;
   final VoidCallback onTap;
 
   @override
@@ -45,9 +47,11 @@ class SudokuCellWidget extends StatelessWidget {
 
     final border = isSelected
         ? Border.all(color: VeldColors.sage, width: 2)
-        : isHintPrimary
+        : isTutorialTarget
             ? Border.all(color: VeldColors.ochre, width: 2)
-            : null;
+            : isHintPrimary
+                ? Border.all(color: VeldColors.ochre, width: 2)
+                : null;
 
     return GestureDetector(
       onTap: onTap,
