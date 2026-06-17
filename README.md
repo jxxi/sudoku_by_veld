@@ -73,7 +73,6 @@ See `docs/STORE_LISTING.md` and `docs/PRIVACY_POLICY.md`.
 ## Next up
 
 - App icon + splash assets
-- Host privacy policy URL
 - TestFlight / internal testing → store submit
 
 ## Tip jar product ID

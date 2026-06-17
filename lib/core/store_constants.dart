@@ -1,2 +1,2 @@
-const privacyPolicyUrl = 'https://veld.app/sudoku/privacy';
-const privacyContactEmail = 'hello@veld.app';
+const privacyPolicyUrl = 'https://jxxi.github.io/sudoku-by-veld-privacy/';
+const privacyContactEmail = 'sudokubyveld@gmail.com';

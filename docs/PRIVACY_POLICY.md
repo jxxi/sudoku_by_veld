@@ -1,6 +1,6 @@
 # Privacy Policy — Sudoku by Veld
 
-**Last updated:** May 28, 2026
+**Last updated:** June 16, 2026
 
 Sudoku by Veld ("the App") is published by Veld. This policy explains what data the App handles.
 
@@ -22,7 +22,7 @@ This data is not transmitted to us.
 
 ## Payments
 
-If you use the optional tip jar, payment is processed entirely by **Apple** or **Google**. We do not receive your payment card details. Purchase receipts are handled by the platform's in-app purchase system.
+Sudoku by Veld is a **paid app** — you purchase it through the **Apple App Store** or **Google Play**. The App also offers an **optional tip jar** (a separate one-time in-app purchase). All payments are processed entirely by **Apple** or **Google**. We do not receive your payment card details. Purchase and receipt data are handled by each platform's store and in-app purchase systems.
 
 ## Data we do not collect
 
@@ -46,4 +46,4 @@ We may update this policy when features change (for example, if online features 
 
 ## Contact
 
-For privacy questions: **hello@veld.app**
+For privacy questions: **sudokubyveld@gmail.com**
