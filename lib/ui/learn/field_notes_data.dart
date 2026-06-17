@@ -284,7 +284,7 @@ FieldNote _pointingTriplesNote() {
       grid,
       0,
       col,
-      DiagramCellData(
+      const DiagramCellData(
         notes: {5},
         role: DiagramCellRole.primary,
         circledNotes: {5},

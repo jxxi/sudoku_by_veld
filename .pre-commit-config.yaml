@@ -1,0 +1,25 @@
+# Install: pip install pre-commit && pre-commit install
+# Requires Flutter on PATH (same as local development).
+repos:
+  - repo: local
+    hooks:
+      - id: flutter-analyze
+        name: flutter analyze
+        entry: flutter analyze
+        language: system
+        pass_filenames: false
+        always_run: true
+
+      - id: flutter-test
+        name: flutter test
+        entry: flutter test
+        language: system
+        pass_filenames: false
+        always_run: true
+
+      - id: validate-puzzles
+        name: validate puzzle pack
+        entry: dart run tool/validate_puzzles.dart
+        language: system
+        pass_filenames: false
+        always_run: true

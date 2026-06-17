@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 
 import '../../models/difficulty.dart';
 import '../../storage/stats_store.dart';
-import '../../theme/veld_colors.dart';
 
 class StatRow extends StatelessWidget {
   const StatRow({

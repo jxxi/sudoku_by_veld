@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
+import 'package:url_launcher/url_launcher.dart';
 
+import '../../core/store_constants.dart';
 import '../../services/tip_jar_service.dart';
 import '../../storage/stats_store.dart';
 
@@ -23,6 +25,7 @@ class SettingsScreen extends StatefulWidget {
 class _SettingsScreenState extends State<SettingsScreen> {
   final TipJarService _tipJar = TipJarService();
   ProductDetails? _product;
+  TipJarFetchResult? _fetchResult;
   bool _loading = true;
 
   @override
@@ -34,21 +37,58 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Future<void> _initTipJar() async {
     _tipJar.purchaseStream.listen(_onPurchaseUpdate);
     if (await _tipJar.isAvailable) {
-      _product = await _tipJar.fetchProduct();
+      _fetchResult = await _tipJar.fetchProduct();
+      _product = _fetchResult!.product;
     }
-    setState(() => _loading = false);
+    if (mounted) setState(() => _loading = false);
     if (widget.openTipJar && mounted) {
       WidgetsBinding.instance.addPostFrameCallback((_) => _showTipJarSheet());
     }
   }
 
+  void _showSnackBar(String message) {
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(message)),
+    );
+  }
+
+  String _productUnavailableMessage() {
+    final result = _fetchResult;
+    if (result == null) {
+      return 'Tip jar product not configured yet. Add veld_tip_jar in the stores.';
+    }
+
+    final parts = <String>['Tip jar product not available.'];
+    if (result.notFoundIds.isNotEmpty) {
+      parts.add('Not found: ${result.notFoundIds.join(', ')}');
+    }
+    if (result.queryError != null) {
+      parts.add(result.queryError!.message);
+    }
+    return parts.join(' ');
+  }
+
   Future<void> _onPurchaseUpdate(List<PurchaseDetails> purchases) async {
     for (final purchase in purchases) {
-      if (purchase.productID == tipJarProductId &&
-          (purchase.status == PurchaseStatus.purchased ||
-              purchase.status == PurchaseStatus.restored)) {
-        await widget.statsStore.setTipJarPurchased(true);
-        if (mounted) setState(() {});
+      if (purchase.productID == tipJarProductId) {
+        switch (purchase.status) {
+          case PurchaseStatus.purchased:
+          case PurchaseStatus.restored:
+            await widget.statsStore.setTipJarPurchased(true);
+            if (mounted) setState(() {});
+            if (purchase.status == PurchaseStatus.purchased) {
+              _showSnackBar('Thank you for your support!');
+            }
+          case PurchaseStatus.error:
+            _showSnackBar(
+              purchase.error?.message ?? 'Purchase failed. Please try again.',
+            );
+          case PurchaseStatus.canceled:
+            _showSnackBar('Purchase canceled.');
+          case PurchaseStatus.pending:
+            _showSnackBar('Purchase pending approval.');
+        }
       }
       if (purchase.pendingCompletePurchase) {
         await InAppPurchase.instance.completePurchase(purchase);
@@ -82,9 +122,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 if (_loading)
                   const Center(child: CircularProgressIndicator())
                 else if (_product == null)
-                  const Text(
-                    'Tip jar product not configured yet. Add veld_tip_jar in the stores.',
-                  )
+                  Text(_productUnavailableMessage())
                 else
                   FilledButton(
                     onPressed: () => _tipJar.purchase(_product!),
@@ -101,6 +139,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
         );
       },
     );
+  }
+
+  Future<void> _openPrivacyPolicy() async {
+    final uri = Uri.parse(privacyPolicyUrl);
+    if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
+      _showSnackBar('Could not open privacy policy.');
+    }
   }
 
   @override
@@ -151,6 +196,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
           ListTile(
             title: const Text('Restore purchases'),
             onTap: _tipJar.restore,
+          ),
+          ListTile(
+            title: const Text('Privacy policy'),
+            trailing: const Icon(Icons.open_in_new),
+            onTap: _openPrivacyPolicy,
           ),
         ],
       ),

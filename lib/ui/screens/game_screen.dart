@@ -10,6 +10,7 @@ import '../../logic/puzzle_repository.dart';
 import '../../logic/sudoku_solver.dart';
 import '../../models/difficulty.dart';
 import '../../models/game_state.dart';
+import '../../services/app_logger.dart';
 import '../../services/haptics.dart';
 import '../../storage/game_store.dart';
 import '../../storage/stats_store.dart';
@@ -55,19 +56,30 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
   }
 
   Future<void> _loadPuzzle() async {
-    if (widget.resumedState != null) {
-      _controller = GameController(widget.resumedState!);
-    } else {
-      final puzzle = await PuzzleRepository.instance.nextForDifficulty(
-        widget.difficulty!,
-        statsStore: widget.statsStore,
-      );
-      await widget.gameStore.clear();
-      _controller = GameController(GameState.fromPuzzle(puzzle));
-    }
+    try {
+      if (widget.resumedState != null) {
+        _controller = GameController(widget.resumedState!);
+      } else {
+        final puzzle = await PuzzleRepository.instance.nextForDifficulty(
+          widget.difficulty!,
+          statsStore: widget.statsStore,
+        );
+        await widget.gameStore.clear();
+        _controller = GameController(GameState.fromPuzzle(puzzle));
+      }
 
-    _startTimer();
-    setState(() => _loading = false);
+      _startTimer();
+      if (mounted) setState(() => _loading = false);
+    } catch (error, stackTrace) {
+      AppLogger.error('Failed to load puzzle', error, stackTrace);
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Could not load puzzle. Please try again.'),
+        ),
+      );
+      Navigator.of(context).pop();
+    }
   }
 
   void _startTimer() {

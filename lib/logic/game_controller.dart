@@ -1,7 +1,6 @@
 import '../models/cell_position.dart';
 import '../models/game_state.dart';
 import '../models/sudoku_cell.dart';
-import '../logic/sudoku_validator.dart';
 
 class GameController {
   GameController(this.state);

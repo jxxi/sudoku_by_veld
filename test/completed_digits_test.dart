@@ -30,8 +30,12 @@ void main() {
       return List.generate(9, (col) {
         final index = row * 9 + col;
         final correct = int.parse(puzzle.solution[index]);
-        if (row == 0 && col == 0) {
-          return SudokuCell(value: 9, isGiven: false, isWrong: true);
+        if (correct == 1) {
+          return SudokuCell(
+            value: 9,
+            isGiven: false,
+            isWrong: true,
+          );
         }
         return SudokuCell(value: correct, isGiven: true);
       });

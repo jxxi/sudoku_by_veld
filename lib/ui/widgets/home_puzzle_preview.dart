@@ -14,7 +14,7 @@ class HomePuzzlePreview extends StatelessWidget {
       '530070000600195000098000060800060003409008001700020006000601008401905000803000079';
 
   static final GameState _state = GameState.fromPuzzle(
-    Puzzle(
+    const Puzzle(
       id: 'home-preview',
       difficulty: Difficulty.easy,
       givens: _givens,

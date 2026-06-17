@@ -13,11 +13,32 @@ dependencies:
   shared_preferences: ^2.5.3
   in_app_purchase: ^3.2.3
   uuid: ^4.5.1
+  url_launcher: ^6.3.1
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^5.0.0
+  image: ^4.5.4
+  flutter_launcher_icons: ^0.14.4
+
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: assets/icon/app_icon.png
+  adaptive_icon_background: "#F4F0E6"
+  adaptive_icon_foreground: assets/icon/app_icon.png
+  web:
+    generate: true
+    image_path: assets/icon/app_icon.png
+    background_color: "#F4F0E6"
+    theme_color: "#6B7F5E"
+  windows:
+    generate: true
+    image_path: assets/icon/app_icon.png
+  macos:
+    generate: true
+    image_path: assets/icon/app_icon.png
 
 flutter:
   uses-material-design: true

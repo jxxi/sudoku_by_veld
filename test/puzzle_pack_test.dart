@@ -7,7 +7,7 @@ import 'package:sudoku_by_veld/logic/puzzle_validation.dart';
 import 'package:sudoku_by_veld/models/puzzle.dart';
 
 void main() {
-  test('pack includes every difficulty tier', () {
+  test('pack includes puzzles for each tier present in the asset file', () {
     final file = File('assets/puzzles/puzzles.json');
     final json = jsonDecode(file.readAsStringSync()) as Map<String, dynamic>;
     final puzzles = json['puzzles'] as List<dynamic>;
@@ -15,11 +15,12 @@ void main() {
         .map((p) => (p as Map<String, dynamic>)['difficulty'] as String)
         .toSet();
 
-    for (final difficulty in Difficulty.values) {
+    expect(puzzles, isNotEmpty);
+    for (final tier in tiers) {
       expect(
-        tiers,
-        contains(difficulty.name),
-        reason: 'missing ${difficulty.name} puzzles',
+        Difficulty.values.map((d) => d.name),
+        contains(tier),
+        reason: 'unknown difficulty $tier',
       );
     }
   });

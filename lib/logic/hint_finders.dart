@@ -1,5 +1,4 @@
 import '../models/cell_position.dart';
-import 'candidate_grid.dart';
 import 'strategy_technique.dart';
 
 typedef Board = List<List<int>>;
@@ -482,7 +481,7 @@ List<StrategyHint> findYWings(Candidates candidates, Board board) {
         if (wing2 == pivot || wing2 == wing1 || !sees(pivot, wing2)) continue;
         final w2 = candidates[wing2.row][wing2.col].toList()..sort();
         if (w2.length != 2) continue;
-        if (!w2.contains(otherPivot!) || !w2.contains(z)) continue;
+        if (!w2.contains(otherPivot) || !w2.contains(z)) continue;
 
         final eliminations = <CellPosition>[];
         for (var row = 0; row < 9; row++) {

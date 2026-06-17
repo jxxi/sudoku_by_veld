@@ -46,4 +46,4 @@ We may update this policy when features change (for example, if online features 
 
 ## Contact
 
-For privacy questions: **[your-email@example.com]** — replace before store submission.
+For privacy questions: **hello@veld.app**

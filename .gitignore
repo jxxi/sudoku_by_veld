@@ -62,6 +62,8 @@ app.*.map.json
 **/ios/**/.vagrant/
 **/ios/**/DerivedData/
 **/ios/**/Icon?
+!**/ios/**/AppIcon.appiconset/**
+!**/ios/**/AppIcon.appiconset/*.png
 **/ios/**/Pods/
 **/ios/**/.symlinks/
 **/ios/**/profile

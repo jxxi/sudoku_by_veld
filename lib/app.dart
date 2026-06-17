@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'core/app_error_handler.dart';
+import 'services/app_logger.dart';
 import 'storage/game_store.dart';
 import 'storage/stats_store.dart';
 import 'theme/veld_theme.dart';
@@ -40,8 +42,18 @@ class _SudokuByVeldAppState extends State<SudokuByVeldApp> {
 
 Future<void> bootstrap() async {
   WidgetsFlutterBinding.ensureInitialized();
-  final prefs = await SharedPreferences.getInstance();
-  final statsStore = StatsStore(prefs);
-  final gameStore = GameStore(prefs);
-  runApp(SudokuByVeldApp(statsStore: statsStore, gameStore: gameStore));
+  setupGlobalErrorHandling();
+
+  await runGuarded(() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final statsStore = StatsStore(prefs);
+      final gameStore = GameStore(prefs);
+      AppLogger.info('App bootstrap complete');
+      runApp(SudokuByVeldApp(statsStore: statsStore, gameStore: gameStore));
+    } catch (error, stackTrace) {
+      AppLogger.error('App bootstrap failed', error, stackTrace);
+      rethrow;
+    }
+  });
 }
