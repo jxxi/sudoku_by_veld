@@ -9,7 +9,6 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  google_fonts: ^6.2.1
   shared_preferences: ^2.5.3
   in_app_purchase: ^3.2.3
   uuid: ^4.5.1
@@ -44,3 +43,14 @@ flutter:
   uses-material-design: true
   assets:
     - assets/puzzles/puzzles.json
+  fonts:
+    - family: Fraunces
+      fonts:
+        - asset: assets/fonts/Fraunces-SemiBold.ttf
+          weight: 600
+    - family: DMSans
+      fonts:
+        - asset: assets/fonts/DMSans-Regular.ttf
+          weight: 400
+        - asset: assets/fonts/DMSans-SemiBold.ttf
+          weight: 600

@@ -26,17 +26,24 @@ class StatRow extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 6),
       child: Row(
         children: [
-          SizedBox(
-            width: 96,
+          Expanded(
+            flex: 2,
             child: Text(
               difficulty.label,
               style: Theme.of(context).textTheme.titleMedium,
+              overflow: TextOverflow.ellipsis,
+              maxLines: 1,
             ),
           ),
+          const SizedBox(width: 8),
           Expanded(
+            flex: 3,
             child: Text(
               'Best ${_formatTime(stats.bestSeconds)}  ·  ${stats.completed} completed',
               style: Theme.of(context).textTheme.bodyMedium,
+              overflow: TextOverflow.ellipsis,
+              maxLines: 1,
+              textAlign: TextAlign.end,
             ),
           ),
         ],

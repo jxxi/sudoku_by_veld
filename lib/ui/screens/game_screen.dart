@@ -306,7 +306,7 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
               ],
             ),
             body: SafeArea(
-              child: Padding(
+              child: SingleChildScrollView(
                 padding: const EdgeInsets.all(16),
                 child: Column(
                   children: [

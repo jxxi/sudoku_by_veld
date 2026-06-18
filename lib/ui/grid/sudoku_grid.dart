@@ -67,21 +67,21 @@ class SudokuGrid extends StatelessWidget {
                       child: Container(
                         decoration: BoxDecoration(
                           border: Border(
-                            right: BorderSide(
-                              color: col == 8
+                            top: BorderSide(
+                              color: row == 0
                                   ? Colors.transparent
-                                  : (col % 3 == 2
+                                  : (row % 3 == 0
                                       ? VeldColors.blockLine
                                       : VeldColors.gridLine),
-                              width: col % 3 == 2 ? 1.5 : 1,
+                              width: row % 3 == 0 ? 1.5 : 1,
                             ),
-                            bottom: BorderSide(
-                              color: row == 8
+                            left: BorderSide(
+                              color: col == 0
                                   ? Colors.transparent
-                                  : (row % 3 == 2
+                                  : (col % 3 == 0
                                       ? VeldColors.blockLine
                                       : VeldColors.gridLine),
-                              width: row % 3 == 2 ? 1.5 : 1,
+                              width: col % 3 == 0 ? 1.5 : 1,
                             ),
                           ),
                         ),

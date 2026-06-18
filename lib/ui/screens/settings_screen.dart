@@ -116,7 +116,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 ),
                 const SizedBox(height: 8),
                 const Text(
-                  'Optional one-time tip. Everything stays free — this just says thanks.',
+                  'Optional one-time tip — thanks for playing!',
                 ),
                 const SizedBox(height: 16),
                 if (_loading)
@@ -145,6 +145,17 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final uri = Uri.parse(privacyPolicyUrl);
     if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
       _showSnackBar('Could not open privacy policy.');
+    }
+  }
+
+  Future<void> _openFeedbackEmail() async {
+    final uri = Uri(
+      scheme: 'mailto',
+      path: privacyContactEmail,
+      query: 'subject=${Uri.encodeComponent('Sudoku by Veld feedback')}',
+    );
+    if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
+      _showSnackBar('Could not open email app.');
     }
   }
 
@@ -192,6 +203,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
             ),
             trailing: const Icon(Icons.favorite_outline),
             onTap: _showTipJarSheet,
+          ),
+          ListTile(
+            title: const Text('Got feedback?'),
+            subtitle: const Text('Send us an email'),
+            trailing: const Icon(Icons.mail_outline),
+            onTap: _openFeedbackEmail,
           ),
           ListTile(
             title: const Text('Restore purchases'),

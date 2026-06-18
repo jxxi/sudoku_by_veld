@@ -11,14 +11,12 @@ class HowToPlayRuleVisual extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      child: Center(
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 320),
-          child: AspectRatio(
-            aspectRatio: 1,
-            child: _MiniGrid(highlight: highlight),
-          ),
+    return Center(
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 320),
+        child: AspectRatio(
+          aspectRatio: 1,
+          child: _MiniGrid(highlight: highlight),
         ),
       ),
     );
@@ -64,21 +62,21 @@ class _MiniGrid extends StatelessWidget {
                       decoration: BoxDecoration(
                         color: bg,
                         border: Border(
-                          right: BorderSide(
-                            color: col == 8
+                          top: BorderSide(
+                            color: row == 0
                                 ? Colors.transparent
-                                : (col % 3 == 2
+                                : (row % 3 == 0
                                     ? VeldColors.blockLine
                                     : VeldColors.gridLine),
-                            width: col % 3 == 2 ? 1.25 : 0.75,
+                            width: row % 3 == 0 ? 1.25 : 0.75,
                           ),
-                          bottom: BorderSide(
-                            color: row == 8
+                          left: BorderSide(
+                            color: col == 0
                                 ? Colors.transparent
-                                : (row % 3 == 2
+                                : (col % 3 == 0
                                     ? VeldColors.blockLine
                                     : VeldColors.gridLine),
-                            width: row % 3 == 2 ? 1.25 : 0.75,
+                            width: col % 3 == 0 ? 1.25 : 0.75,
                           ),
                         ),
                       ),

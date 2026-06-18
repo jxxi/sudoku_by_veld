@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 import 'veld_colors.dart';
+import 'veld_typography.dart';
 
 abstract final class VeldTheme {
   static ThemeData light() {
@@ -24,9 +24,8 @@ abstract final class VeldTheme {
         foregroundColor: VeldColors.ink,
         elevation: 0,
         centerTitle: true,
-        titleTextStyle: GoogleFonts.fraunces(
+        titleTextStyle: VeldTypography.fraunces(
           fontSize: 22,
-          fontWeight: FontWeight.w600,
           color: VeldColors.ink,
         ),
       ),
@@ -41,7 +40,7 @@ abstract final class VeldTheme {
           foregroundColor: Colors.white,
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-          textStyle: GoogleFonts.dmSans(fontWeight: FontWeight.w600),
+          textStyle: VeldTypography.dmSans(fontWeight: FontWeight.w600),
         ),
       ),
       outlinedButtonTheme: OutlinedButtonThemeData(
@@ -50,7 +49,7 @@ abstract final class VeldTheme {
           side: const BorderSide(color: VeldColors.sage),
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-          textStyle: GoogleFonts.dmSans(fontWeight: FontWeight.w600),
+          textStyle: VeldTypography.dmSans(fontWeight: FontWeight.w600),
         ),
       ),
     );
@@ -58,24 +57,22 @@ abstract final class VeldTheme {
 
   static TextTheme _textTheme(TextTheme base) {
     return TextTheme(
-      displaySmall: GoogleFonts.fraunces(
+      displaySmall: VeldTypography.fraunces(
         fontSize: 32,
-        fontWeight: FontWeight.w600,
         color: VeldColors.ink,
       ),
-      titleLarge: GoogleFonts.fraunces(
+      titleLarge: VeldTypography.fraunces(
         fontSize: 22,
-        fontWeight: FontWeight.w600,
         color: VeldColors.ink,
       ),
-      titleMedium: GoogleFonts.dmSans(
+      titleMedium: VeldTypography.dmSans(
         fontSize: 16,
         fontWeight: FontWeight.w600,
         color: VeldColors.ink,
       ),
-      bodyLarge: GoogleFonts.dmSans(fontSize: 16, color: VeldColors.ink),
-      bodyMedium: GoogleFonts.dmSans(fontSize: 14, color: VeldColors.inkMuted),
-      labelLarge: GoogleFonts.dmSans(
+      bodyLarge: VeldTypography.dmSans(fontSize: 16, color: VeldColors.ink),
+      bodyMedium: VeldTypography.dmSans(fontSize: 14, color: VeldColors.inkMuted),
+      labelLarge: VeldTypography.dmSans(
         fontSize: 14,
         fontWeight: FontWeight.w600,
         color: VeldColors.ink,

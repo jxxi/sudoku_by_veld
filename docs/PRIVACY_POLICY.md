@@ -33,8 +33,9 @@ Sudoku by Veld is a **paid app** — you purchase it through the **Apple App Sto
 
 ## Third-party services
 
-- **Google Fonts** may download font files when the App runs (standard Flutter/google_fonts behavior). No personal data is sent as part of puzzle play.
 - **Apple App Store / Google Play** process store purchases and updates under their own privacy policies.
+
+Typography (Fraunces and DM Sans) is **bundled in the App** — no font downloads at runtime.
 
 ## Children
 

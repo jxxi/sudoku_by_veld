@@ -52,27 +52,37 @@ class NumberPad extends StatelessWidget {
           ],
         ),
         const SizedBox(height: 12),
-        GridView.builder(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          itemCount: 9,
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 9,
-            mainAxisSpacing: 8,
-            crossAxisSpacing: 8,
-          ),
-          itemBuilder: (context, index) {
-            final digit = index + 1;
-            if (completedDigits.contains(digit)) {
-              return const SizedBox.shrink();
-            }
-            return FilledButton(
-              onPressed: () => onDigit(digit),
-              style: FilledButton.styleFrom(
-                padding: EdgeInsets.zero,
-                minimumSize: const Size(36, 44),
+        LayoutBuilder(
+          builder: (context, constraints) {
+            const spacing = 6.0;
+            final cellWidth = (constraints.maxWidth - spacing * 8) / 9;
+            final cellHeight = cellWidth.clamp(36.0, 48.0);
+
+            return GridView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: 9,
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 9,
+                mainAxisSpacing: spacing,
+                crossAxisSpacing: spacing,
+                childAspectRatio: cellWidth / cellHeight,
               ),
-              child: Text('$digit'),
+              itemBuilder: (context, index) {
+                final digit = index + 1;
+                if (completedDigits.contains(digit)) {
+                  return const SizedBox.shrink();
+                }
+                return FilledButton(
+                  onPressed: () => onDigit(digit),
+                  style: FilledButton.styleFrom(
+                    padding: EdgeInsets.zero,
+                    minimumSize: Size.zero,
+                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  ),
+                  child: Text('$digit'),
+                );
+              },
             );
           },
         ),

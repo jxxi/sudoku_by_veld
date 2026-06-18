@@ -77,21 +77,21 @@ class StrategyDiagram extends StatelessWidget {
                             decoration: BoxDecoration(
                               color: _backgroundFor(cell.role),
                               border: Border(
-                                right: BorderSide(
-                                  color: col == size - 1
+                                top: BorderSide(
+                                  color: row == 0
                                       ? Colors.transparent
-                                      : (col % box == box - 1
+                                      : (row % box == 0
                                           ? VeldColors.blockLine
                                           : VeldColors.gridLine),
-                                  width: col % box == box - 1 ? 1.25 : 0.75,
+                                  width: row % box == 0 ? 1.25 : 0.75,
                                 ),
-                                bottom: BorderSide(
-                                  color: row == size - 1
+                                left: BorderSide(
+                                  color: col == 0
                                       ? Colors.transparent
-                                      : (row % box == box - 1
+                                      : (col % box == 0
                                           ? VeldColors.blockLine
                                           : VeldColors.gridLine),
-                                  width: row % box == box - 1 ? 1.25 : 0.75,
+                                  width: col % box == 0 ? 1.25 : 0.75,
                                 ),
                               ),
                             ),

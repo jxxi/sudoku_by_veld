@@ -187,46 +187,67 @@ class _TutorialScreenState extends State<TutorialScreen> {
         ],
       ),
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            children: [
-              if (_isRuleStep)
-                HowToPlayRuleVisual(highlight: _ruleHighlight)
-              else if (_showGrid)
-                SudokuGrid(
-                  state: _controller.state,
-                  onCellTap: _onCellTap,
-                  highlightCell: _data.targetCell,
-                )
-              else
-                const Spacer(),
-              if (_showGrid) const SizedBox(height: 16),
-              if (_showNumberPad)
-                NumberPad(
-                  pencilMode: _controller.state.pencilMode,
-                  onDigit: _onDigit,
-                  onErase: () => setState(_controller.clearSelected),
-                  onTogglePencil: _onTogglePencil,
-                  onHint: () {},
-                  showHint: false,
-                )
-              else
-                const SizedBox(height: 120),
-              const SizedBox(height: 16),
-              TutorialCoach(
-                data: _data,
-                onSkip: _skip,
-                onNext: _nextTapStep != null
-                    ? () => _advance(_nextTapStep!)
-                    : _step == TutorialStep.done
-                        ? _finish
-                        : () {},
-                showNext: _nextTapStep != null || _step == TutorialStep.done,
+        child: _isRuleStep
+            ? Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  children: [
+                    Expanded(
+                      child: HowToPlayRuleVisual(highlight: _ruleHighlight),
+                    ),
+                    const SizedBox(height: 16),
+                    TutorialCoach(
+                      data: _data,
+                      onSkip: _skip,
+                      onNext: _nextTapStep != null
+                          ? () => _advance(_nextTapStep!)
+                          : _step == TutorialStep.done
+                              ? _finish
+                              : () {},
+                      showNext: _nextTapStep != null || _step == TutorialStep.done,
+                    ),
+                  ],
+                ),
+              )
+            : SingleChildScrollView(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  children: [
+                    if (_showGrid)
+                      SudokuGrid(
+                        state: _controller.state,
+                        onCellTap: _onCellTap,
+                        highlightCell: _data.targetCell,
+                      )
+                    else
+                      const SizedBox(height: 120),
+                    if (_showGrid) const SizedBox(height: 16),
+                    if (_showNumberPad)
+                      NumberPad(
+                        pencilMode: _controller.state.pencilMode,
+                        onDigit: _onDigit,
+                        onErase: () => setState(_controller.clearSelected),
+                        onTogglePencil: _onTogglePencil,
+                        onHint: () {},
+                        showHint: false,
+                      )
+                    else
+                      const SizedBox(height: 120),
+                    const SizedBox(height: 16),
+                    TutorialCoach(
+                      data: _data,
+                      onSkip: _skip,
+                      onNext: _nextTapStep != null
+                          ? () => _advance(_nextTapStep!)
+                          : _step == TutorialStep.done
+                              ? _finish
+                              : () {},
+                      showNext:
+                          _nextTapStep != null || _step == TutorialStep.done,
+                    ),
+                  ],
+                ),
               ),
-            ],
-          ),
-        ),
       ),
     );
   }
